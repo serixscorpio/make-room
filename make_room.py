@@ -53,8 +53,6 @@ for filename in os.listdir(path):
     if not os.path.isfile(input_path):
         continue
     try:
-        if not is_h265(input_path):
-            print(f"Input: {input_path} ({formatted_size(input_path)})")
         if is_video(input_path) and not is_h265(input_path):
             print(f"Input: {input_path} ({formatted_size(input_path)})")
             if not dry_run:
