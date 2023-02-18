@@ -22,6 +22,7 @@ def jpeg_to_avif(input_path, output_path):
     JPGimg = Image.open(input_path)
     JPGimg.save(output_path, "AVIF", quality=70)
 
+
 def encode_to_avif(input_path, dry_run=True):
     """Encode input to avif.
 
@@ -33,13 +34,14 @@ def encode_to_avif(input_path, dry_run=True):
         boolean: whether picture is encoded to avif
     """
     if not is_jpeg(input_path):
-        return False # not jpeg
+        return False  # not jpeg
     print(f"Input: {input_path} ({formatted_size(input_path)})")
     output_path = generate_output_path(input_path)
     if not dry_run:
         jpeg_to_avif(input_path, output_path)
         print(f"Output: {output_path} ({formatted_size(output_path)})")
     return True
+
 
 def traverse(path, accumulated_data_size=0) -> int:
     for filename in os.listdir(path):
