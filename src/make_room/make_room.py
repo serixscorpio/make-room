@@ -2,7 +2,7 @@ import ffmpy
 import magic
 import os
 import traceback
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 

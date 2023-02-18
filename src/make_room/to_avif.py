@@ -1,7 +1,6 @@
 import magic
 import os
 from PIL import Image, ImageFile
-import pillow_avif
 import sys
 
 
