@@ -42,24 +42,27 @@ def convert_to_h265(input_path, output_path):
     # print(f"Removed {input_path}")
 
 
-path = sys.argv[1]  # required command line argument
-target_data_size = 2_000_000_000  # process a maximum of N bytes of data
-dry_run = True  # toggle this for dry run / real run
-print(f"{'dry run...' if dry_run else 'real run...'}")
+def main(path: str, dry_run: bool = True) -> None:
+    target_data_size = 2_000_000_000  # process a maximum of N bytes of data
+    print(f"{'dry run...' if dry_run else 'real run...'}")
 
-actual_data_size = 0
-for filename in os.listdir(path):
-    input_path = os.path.join(path, filename)
-    if not os.path.isfile(input_path):
-        continue
-    try:
-        if is_video(input_path) and not is_h265(input_path):
-            print(f"Input: {input_path} ({formatted_size(input_path)})")
-            if not dry_run:
-                output_path = generate_output_path(input_path)
-                convert_to_h265(input_path, output_path)
-            actual_data_size += os.stat(input_path).st_size
-            if actual_data_size > target_data_size:
-                break
-    except ffmpy.FFRuntimeError:
-        traceback.print_exc()
+    actual_data_size = 0
+    for filename in os.listdir(path):
+        input_path = os.path.join(path, filename)
+        if not os.path.isfile(input_path):
+            continue
+        try:
+            if is_video(input_path) and not is_h265(input_path):
+                print(f"Input: {input_path} ({formatted_size(input_path)})")
+                if not dry_run:
+                    output_path = generate_output_path(input_path)
+                    convert_to_h265(input_path, output_path)
+                actual_data_size += os.stat(input_path).st_size
+                if actual_data_size > target_data_size:
+                    break
+        except ffmpy.FFRuntimeError:
+            traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1])  # requires an input path as the command line argument
