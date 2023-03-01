@@ -2,7 +2,7 @@ import ffmpy
 import magic
 import os
 import traceback
-import subprocess
+import subprocess  # nosec B404
 import sys
 
 
@@ -43,7 +43,7 @@ def convert_to_h265(input_path, output_path):
 
 
 path = sys.argv[1]  # required command line argument
-target_data_size = 2_000_000_000  # process a maximum of N MB of data, or a single file if greater than N MB
+target_data_size = 2_000_000_000  # process a maximum of N bytes of data
 dry_run = True  # toggle this for dry run / real run
 print(f"{'dry run...' if dry_run else 'real run...'}")
 
