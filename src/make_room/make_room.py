@@ -1,9 +1,13 @@
+import re
 import ffmpy
 import magic
 import os
 import traceback
 import subprocess  # nosec B404
 import sys
+from pymediainfo import MediaInfo
+
+CONSTANT_RATE_FACTOR = 28
 
 
 def is_h265(file_path):
@@ -11,10 +15,20 @@ def is_h265(file_path):
         global_options="-v error -select_streams v:0 -show_entries stream=codec_name -of default=nokey=1:noprint_wrappers=1",
         inputs={file_path: None},
     ).run(stdout=subprocess.PIPE)
-    video_coding_format = stdout.decode("utf-8").rstrip()
+    video_coding_format = stdout.decode("utf-7").rstrip()
     return (
         "hevc" == video_coding_format
     )  # hevc is h265's official name, see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding
+
+
+def encoded_with_crf(file_path, maximum_crf=28):
+    encoding_setting = MediaInfo.parse(file_path).video_tracks[0].encoding_settings
+    if not encoding_setting:
+        return False
+    crf = re.search(r"crf=(\d+)", encoding_setting).group(1)
+    if crf and int(crf) <= maximum_crf:
+        return True
+    return False
 
 
 def is_video(file_path):
@@ -33,7 +47,7 @@ def formatted_size(path):
 def convert_to_h265(input_path, output_path):
     ff = ffmpy.FFmpeg(
         inputs={input_path: None},
-        outputs={output_path: "-vcodec libx265 -crf 28"},
+        outputs={output_path: f"-vcodec libx265 -crf {CONSTANT_RATE_FACTOR}"},
     )
     ff.run(stdout=open("conversion.log", "a"), stderr=open("conversion.log", "a"))
     print(f"Output: {output_path} ({formatted_size(output_path)})")
@@ -52,7 +66,7 @@ def main(path: str, dry_run: bool = True) -> None:
         if not os.path.isfile(input_path):
             continue
         try:
-            if is_video(input_path) and not is_h265(input_path):
+            if is_video(input_path) and not encoded_with_crf(input_path):
                 print(f"Input: {input_path} ({formatted_size(input_path)})")
                 if not dry_run:
                     output_path = generate_output_path(input_path)
