@@ -21,12 +21,12 @@ def is_h265(file_path):
     )  # hevc is h265's official name, see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding
 
 
-def encoded_with_crf(file_path, maximum_crf=28):
+def encoded_with_crf(file_path):
     encoding_setting = MediaInfo.parse(file_path).video_tracks[0].encoding_settings
     if not encoding_setting:
         return False
     crf = re.search(r"crf=(\d+)", encoding_setting).group(1)
-    if crf and int(crf) <= maximum_crf:
+    if crf and int(crf) <= CONSTANT_RATE_FACTOR:
         return True
     return False
 
