@@ -12,6 +12,7 @@ Pillow = ">=9.4.0"
 pillow-avif-plugin = ">=1.3.1"
 python-magic = ">=0.4.27"
 pymediainfo = ">=6.0.1"
+click = ">=8.1.3"
 
 [tool.poetry.group.dev.dependencies]
 bandit = ">=1.7.4"
