@@ -1,4 +1,5 @@
 import re
+import click
 import ffmpy
 import magic
 import os
@@ -56,13 +57,11 @@ def convert_to_h265(input_path, output_path):
     # print(f"Removed {input_path}")
 
 
+@click.command(context_settings={"show_default": True})
+@click.argument("path")
+@click.option("--dry-run", is_flag=True, default=True)
 def main(path: str, dry_run: bool = True) -> None:
-    """Converts all videos in the specified directory to h265.
-
-    Args:
-        path (str): target directory
-        dry_run (bool, optional): Defaults to True.
-    """
+    """Converts all videos in the specified directory to h265."""
 
     target_data_size = 2_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
@@ -93,4 +92,4 @@ def main(path: str, dry_run: bool = True) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])  # requires an input path as the command line argument
+    main()  # requires an input path as the command line argument
