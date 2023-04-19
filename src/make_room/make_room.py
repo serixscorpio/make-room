@@ -58,18 +58,22 @@ def convert_to_h265(input_path, output_path):
 
 
 @click.command(context_settings={"show_default": True})
-@click.argument("path")
-@click.option("--dry-run", is_flag=True, default=True)
-def main(path: str, dry_run: bool = True) -> None:
+@click.argument("directory")
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    help="List files to convert, but don't actually convert anything.",
+)
+def main(directory: str, dry_run: bool) -> None:
     """Converts all videos in the specified directory to h265."""
 
     target_data_size = 2_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
 
     actual_data_size = 0
-    # Walk through all the files in the specified directory.
-    for filename in os.listdir(path):
-        input_path = os.path.join(path, filename)
+    # Walk through all the entries in the specified directory.
+    for entry in os.listdir(directory):
+        input_path = os.path.join(directory, entry)
         # Ignore anything that isn't a file.
         if not os.path.isfile(input_path):
             continue
