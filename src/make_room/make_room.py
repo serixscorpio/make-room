@@ -57,21 +57,35 @@ def convert_to_h265(input_path, output_path):
 
 
 def main(path: str, dry_run: bool = True) -> None:
+    """Converts all videos in the specified directory to h265.
+
+    Args:
+        path (str): target directory
+        dry_run (bool, optional): Defaults to True.
+    """
+
     target_data_size = 2_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
 
     actual_data_size = 0
+    # Walk through all the files in the specified directory.
     for filename in os.listdir(path):
         input_path = os.path.join(path, filename)
+        # Ignore anything that isn't a file.
         if not os.path.isfile(input_path):
             continue
         try:
+            # Only process videos that aren't already encoded with CRF.
             if is_video(input_path) and not encoded_with_crf(input_path):
+                # Print the input file.
                 print(f"Input: {input_path} ({formatted_size(input_path)})")
+                # If we're not doing a dry run, actually convert the file.
                 if not dry_run:
                     output_path = generate_output_path(input_path)
                     convert_to_h265(input_path, output_path)
+                # Keep track of the total data size.
                 actual_data_size += os.stat(input_path).st_size
+                # Stop processing files once we've reached our target data size.
                 if actual_data_size > target_data_size:
                     break
         except ffmpy.FFRuntimeError:
