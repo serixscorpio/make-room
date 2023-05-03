@@ -1,6 +1,0 @@
-ffmpy
-flake8
-ipython
-Pillow
-pillow-avif-plugin
-python-magic
