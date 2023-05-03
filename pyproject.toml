@@ -22,6 +22,50 @@ ipython = ">=8.9.0"
 pre-commit = ">=3.0.4"
 pytest = ">=7.2.1"
 
+
+[tool.hatch]
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "make-room"
+dynamic = ["version"]
+description = "Scripts to convert pictures and videos using more space efficient encodings."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+    { name = "Eric Ti Yu Chiang", email = "eric.ti.yu.chiang@gmail.com" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Utilities",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+]
+dependencies = [
+    "ffmpy>=0.3.0",
+    "Pillow>=9.4.0",
+    "pillow-avif-plugin>=1.3.1",
+    "python-magic>=0.4.27",
+    "pymediainfo>=6.0.1",
+    "click>=8.1.3",
+]
+
+[project.scripts]
+make-room = "make_room:main"
+
+[project.urls]
+"Source code" = "https://github.com/serixscorpio/make-room"
+
+[tool.hatch.version]
+path = "src/make_room/__init__.py"
