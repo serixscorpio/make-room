@@ -1,11 +1,11 @@
+import os
 import re
+import subprocess  # nosec B404
+import traceback
+
 import click
 import ffmpy
 import magic
-import os
-import traceback
-import subprocess  # nosec B404
-import sys
 from pymediainfo import MediaInfo
 
 CONSTANT_RATE_FACTOR = 28
@@ -13,13 +13,13 @@ CONSTANT_RATE_FACTOR = 28
 
 def is_h265(file_path):
     stdout, _ = ffmpy.FFprobe(
-        global_options="-v error -select_streams v:0 -show_entries stream=codec_name -of default=nokey=1:noprint_wrappers=1",
+        global_options="-v error -select_streams v:0 -show_entries stream=codec_name -of default=nokey=1:noprint_wrappers=1",  # noqa: E501
         inputs={file_path: None},
     ).run(stdout=subprocess.PIPE)
     video_coding_format = stdout.decode("utf-7").rstrip()
     return (
         "hevc" == video_coding_format
-    )  # hevc is h265's official name, see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding
+    )  # hevc is h265 official name, see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding
 
 
 def encoded_with_crf(file_path):
@@ -50,9 +50,11 @@ def convert_to_h265(input_path, output_path):
         inputs={input_path: None},
         outputs={output_path: f"-vcodec libx265 -crf {CONSTANT_RATE_FACTOR}"},
     )
-    ff.run(stdout=open("conversion.log", "a"), stderr=open("conversion.log", "a"))
+    ff.run(
+        stdout=open("conversion.log", "a", encoding="utf-8"), stderr=open("conversion.log", "a", encoding="utf-8"),
+    )
     print(f"Output: {output_path} ({formatted_size(output_path)})")
-    # Commented out the following to avoid potential data loss.  Better be safe than sorry
+    # Commented out the following to avoid potential data loss.  For better safety.
     # os.remove(input_path)
     # print(f"Removed {input_path}")
 
@@ -93,7 +95,3 @@ def main(directory: str, dry_run: bool) -> None:
                     break
         except ffmpy.FFRuntimeError:
             traceback.print_exc()
-
-
-if __name__ == "__main__":
-    main()  # requires an input path as the command line argument

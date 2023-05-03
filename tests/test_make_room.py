@@ -3,7 +3,7 @@ import os
 import shutil
 from make_room import make_room
 
-import pytest
+import pytest  # noqa: F401
 
 fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
 

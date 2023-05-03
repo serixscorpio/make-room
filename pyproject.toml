@@ -43,6 +43,7 @@ dev = [
     "ipython>=8.9.0",
     "pre-commit>=3.0.4",
     "pytest>=7.2.1",
+    "ruff ==0.0.264",
 ]
 
 [project.scripts]
@@ -53,3 +54,17 @@ make-room = "make_room:main"
 
 [tool.hatch.version]
 path = "src/make_room/__init__.py"
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    # "I",  # isort
+    "B", # flake8-bugbear
+]
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+]
