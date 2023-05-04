@@ -55,6 +55,9 @@ make-room = "make_room:main"
 [tool.hatch.version]
 path = "src/make_room/__init__.py"
 
+[tool.hatch.envs.default]
+features = ["dev"]
+
 [tool.ruff]
 select = [
     "E", # pycodestyle errors

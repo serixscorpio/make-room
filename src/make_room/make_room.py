@@ -51,7 +51,8 @@ def convert_to_h265(input_path, output_path):
         outputs={output_path: f"-vcodec libx265 -crf {CONSTANT_RATE_FACTOR}"},
     )
     ff.run(
-        stdout=open("conversion.log", "a", encoding="utf-8"), stderr=open("conversion.log", "a", encoding="utf-8"),
+        stdout=open("conversion.log", "a", encoding="utf-8"),
+        stderr=open("conversion.log", "a", encoding="utf-8"),
     )
     print(f"Output: {output_path} ({formatted_size(output_path)})")
     # Commented out the following to avoid potential data loss.  For better safety.
