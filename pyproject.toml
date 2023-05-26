@@ -37,7 +37,6 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "bandit>=1.7.4",
     "black>=23.1.0",
     "ipython>=8.9.0",
     "pre-commit>=3.0.4",
@@ -58,15 +57,12 @@ path = "src/make_room/__init__.py"
 features = ["dev"]
 
 [tool.ruff]
+line-length = 120
 select = [
-    "E", # pycodestyle errors
-    "W", # pycodestyle warnings
-    "F", # pyflakes
-    # "I",  # isort
     "B", # flake8-bugbear
-]
-ignore = [
-    "E501", # line too long, handled by black
-    "B008", # do not perform function calls in argument defaults
-    "C901", # too complex
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "I", # isort
+    "S", # flake8-bandit
+    "W", # pycodestyle warnings
 ]
