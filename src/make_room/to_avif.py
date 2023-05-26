@@ -1,7 +1,8 @@
-import magic
 import os
-from PIL import Image, ImageFile
 import sys
+
+import magic
+from PIL import Image, ImageFile
 
 
 def is_jpeg(file_path):

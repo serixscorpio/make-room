@@ -37,12 +37,11 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "bandit>=1.7.4",
     "black>=23.1.0",
-    "flake8>=6.0.0",
     "ipython>=8.9.0",
     "pre-commit>=3.0.4",
     "pytest>=7.2.1",
+    "ruff ==0.0.264",
 ]
 
 [project.scripts]
@@ -53,3 +52,17 @@ make-room = "make_room:main"
 
 [tool.hatch.version]
 path = "src/make_room/__init__.py"
+
+[tool.hatch.envs.default]
+features = ["dev"]
+
+[tool.ruff]
+line-length = 120
+select = [
+    "B", # flake8-bugbear
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "I", # isort
+    "S", # flake8-bandit
+    "W", # pycodestyle warnings
+]

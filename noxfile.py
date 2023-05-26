@@ -5,5 +5,5 @@ from nox_poetry import Session, session
 def precommit(session: Session) -> None:
     """Lint using pre-commit."""
     args = session.posargs or ["run", "--all-files", "--show-diff-on-failure"]
-    session.install("bandit", "black", "flake8", "pre-commit", "pre-commit-hooks")
+    session.install("bandit", "black", "pre-commit", "pre-commit-hooks")
     session.run("pre-commit", *args)
