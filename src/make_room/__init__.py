@@ -2,4 +2,4 @@
 
 __version__ = "0.1.0"
 
-from make_room.make_room import main
+from make_room.make_room import main  # noqa: F401
