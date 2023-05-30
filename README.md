@@ -19,7 +19,7 @@ pip install --upgrade pip
 
 Install all dependencies:
 ```
-pip install -e ".[dev]"
+pip install -e ".[test,dev]"
 ```
 
 Test run cli tool:
