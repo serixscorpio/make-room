@@ -8,7 +8,7 @@ from make_room import make_room
 fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
 
 
-def test_make_room():
+def test_make_room() -> None:
     runner = CliRunner()
     with runner.isolated_filesystem():
         shutil.copy(f"{fixture_path}/example-video.mp4", ".")
