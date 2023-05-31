@@ -12,4 +12,6 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "python.formatting.provider": "none",
+  "python.linting.mypyEnabled": true,
+  "python.linting.enabled": true,
 }

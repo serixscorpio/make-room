@@ -11,19 +11,19 @@ from pymediainfo import MediaInfo
 THRESHOLD_CONSTANT_RATE_FACTOR = 28
 
 
-def is_h265(file_path):
+def is_h265(file_path: str) -> bool:
     stdout, _ = ffmpy.FFprobe(
         global_options="-v error -select_streams v:0 -show_entries stream=codec_name "
         "-of default=nokey=1:noprint_wrappers=1",
         inputs={file_path: None},
     ).run(stdout=subprocess.PIPE)
     video_coding_format = stdout.decode("utf-7").rstrip()
-    return (
+    return bool(
         "hevc" == video_coding_format
     )  # hevc is h265 official name, see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding
 
 
-def encoded_with_crf(file_path):
+def encoded_with_crf(file_path: str) -> bool:
     media_info = MediaInfo.parse(file_path)
     if not isinstance(media_info, MediaInfo):
         raise TypeError("media_info must be an instance of MediaInfo")
@@ -39,20 +39,20 @@ def encoded_with_crf(file_path):
     return False
 
 
-def is_video(file_path):
+def is_video(file_path: str) -> bool:
     return "video" in magic.Magic(mime=True).from_file(file_path)
 
 
-def generate_output_path(file_path, suffix="-c"):
+def generate_output_path(file_path: str, suffix: str = "-c") -> str:
     file_name, file_extension = os.path.splitext(file_path)
     return file_name + suffix + file_extension
 
 
-def formatted_size(path):
+def formatted_size(path: str) -> str:
     return f"{os.stat(path).st_size / 1024 / 1024:.1f}MB"
 
 
-def convert_to_h265(input_path, output_path):
+def convert_to_h265(input_path: str, output_path: str) -> None:
     ff = ffmpy.FFmpeg(
         inputs={input_path: None},
         outputs={output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR}"},
@@ -77,13 +77,13 @@ def convert_to_h265(input_path, output_path):
 def main(directory: str, dry_run: bool) -> None:
     """Converts all videos in the specified directory to h265."""
 
-    target_data_size = 2_000_000_000  # process a maximum of N bytes of data
+    target_data_size: int = 2_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
 
-    actual_data_size = 0
+    actual_data_size: int = 0
     # Walk through all the entries in the specified directory.
     for entry in os.listdir(directory):
-        input_path = os.path.join(directory, entry)
+        input_path: str = os.path.join(directory, entry)
         # Ignore anything that isn't a file.
         if not os.path.isfile(input_path):
             continue
@@ -94,7 +94,7 @@ def main(directory: str, dry_run: bool) -> None:
                 print(f"Input: {input_path} ({formatted_size(input_path)})")
                 # If we're not doing a dry run, actually convert the file.
                 if not dry_run:
-                    output_path = generate_output_path(input_path)
+                    output_path: str = generate_output_path(input_path)
                     convert_to_h265(input_path, output_path)
                 # Keep track of the total data size.
                 actual_data_size += os.stat(input_path).st_size

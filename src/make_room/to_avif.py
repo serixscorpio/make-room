@@ -5,33 +5,33 @@ import magic
 from PIL import Image, ImageFile
 
 
-def is_jpeg(file_path):
+def is_jpeg(file_path: str) -> bool:
     return "image/jpeg" in magic.Magic(mime=True).from_file(file_path)
 
 
-def generate_output_path(file_path):
-    file_name, _file_extension = os.path.splitext(file_path)
+def generate_output_path(file_path: str) -> str:
+    file_name, _ = os.path.splitext(file_path)
     return file_name + ".avif"
 
 
-def formatted_size(path):
+def formatted_size(path: str) -> str:
     return f"{os.stat(path).st_size / 1024 / 1024:.1f}MB"
 
 
-def jpeg_to_avif(input_path, output_path):
+def jpeg_to_avif(input_path: str, output_path: str) -> None:
     JPGimg = Image.open(input_path)
     JPGimg.save(output_path, "AVIF", quality=70)
 
 
-def encode_to_avif(input_path, dry_run=True):
+def encode_to_avif(input_path: str, dry_run: bool = True) -> bool:
     """Encode input to avif.
 
     Args:
-        input_path (_type_): _description_
-        dry_run (bool, optional): _description_. Defaults to True.
+        input_path (str): path to the input file
+        dry_run (bool, optional): whether to perform a dry run. Defaults to True.
 
     Returns:
-        boolean: whether picture is encoded to avif
+        bool: whether the picture is encoded to avif
     """
     if not is_jpeg(input_path):
         return False  # not jpeg
@@ -43,7 +43,7 @@ def encode_to_avif(input_path, dry_run=True):
     return True
 
 
-def traverse(path, accumulated_data_size=0) -> int:
+def traverse(path: str, accumulated_data_size: int = 0) -> int:
     for filename in os.listdir(path):
         input_path = os.path.join(path, filename)
         if os.path.isdir(input_path):
