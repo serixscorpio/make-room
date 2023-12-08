@@ -2,6 +2,7 @@ import os
 import sys
 
 import magic
+import pillow_avif  # noqa: F401
 from PIL import Image, ImageFile
 
 
