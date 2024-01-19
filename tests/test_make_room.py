@@ -14,7 +14,4 @@ def test_make_room() -> None:
         shutil.copy(f"{fixture_path}/example-video.mp4", ".")
         runner.invoke(make_room.main, ["."], catch_exceptions=False)
         assert make_room.encoded_with_crf("example-video-c.mp4")
-        assert (
-            os.stat("example-video.mp4").st_size
-            > os.stat("example-video-c.mp4").st_size
-        )
+        assert os.stat("example-video.mp4").st_size > os.stat("example-video-c.mp4").st_size

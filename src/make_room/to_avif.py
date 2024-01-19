@@ -44,9 +44,7 @@ def encode_to_avif(input_path: str, dry_run: bool = True) -> bool:
     return True
 
 
-def traverse(
-    path: str, max_data_to_process: int = 2**32, accumulated_data_size: int = 0
-) -> int:
+def traverse(path: str, max_data_to_process: int = 2**32, accumulated_data_size: int = 0) -> int:
     """traverse through a directory structure recurisvely to find jpeg files to convert to avif
 
     Args:

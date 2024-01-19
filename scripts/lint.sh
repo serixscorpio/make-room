@@ -5,4 +5,4 @@ set -x
 
 mypy src
 ruff src tests
-black src tests --check
+ruff format src tests --check

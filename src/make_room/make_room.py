@@ -56,9 +56,7 @@ def convert_to_h265(input_path: str, output_path: str) -> None:
     try:
         ff = ffmpy.FFmpeg(
             inputs={input_path: None},
-            outputs={
-                output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR}"
-            },
+            outputs={output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR}"},
         )
         ff.run(
             stdout=open(os.devnull),  # suppress output to console
