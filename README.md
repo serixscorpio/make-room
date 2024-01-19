@@ -31,7 +31,7 @@ make-room --help
 
 ```sh
 # at project root
-python make-room ~/ec-keep/photos-videos/2023/
+make-room ~/ec-keep/photos-videos/2023/
 ```
 
 This finds video within the `~/ec-keep/photos-videos/2023/` directory and encodes them using H265 with a constant rate factor of 28.
