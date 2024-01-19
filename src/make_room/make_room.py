@@ -4,9 +4,9 @@ import subprocess
 import traceback
 
 import click
-import ffmpy
+import ffmpy  # type: ignore
 import magic
-from pymediainfo import MediaInfo
+from pymediainfo import MediaInfo  # type: ignore
 
 THRESHOLD_CONSTANT_RATE_FACTOR = 28
 
