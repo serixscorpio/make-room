@@ -53,14 +53,19 @@ def formatted_size(path: str) -> str:
 
 
 def convert_to_h265(input_path: str, output_path: str) -> None:
-    ff = ffmpy.FFmpeg(
-        inputs={input_path: None},
-        outputs={output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR}"},
-    )
-    ff.run(
-        stdout=open(os.devnull),  # suppress output to console
-        stderr=None,  # display error to console
-    )
+    try:
+        ff = ffmpy.FFmpeg(
+            inputs={input_path: None},
+            outputs={
+                output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR}"
+            },
+        )
+        ff.run(
+            stdout=open(os.devnull),  # suppress output to console
+            stderr=None,  # display error to console
+        )
+    except ffmpy.FFRuntimeError:
+        traceback.print_exc()
     print(f"Output: {output_path} ({formatted_size(output_path)})")
     # Commented out the following to avoid potential data loss.  For better safety.
     # os.remove(input_path)
@@ -87,19 +92,20 @@ def main(directory: str, dry_run: bool) -> None:
         # Ignore anything that isn't a file.
         if not os.path.isfile(input_path):
             continue
-        try:
-            # Only process videos that aren't already encoded with CRF.
-            if is_video(input_path) and not encoded_with_crf(input_path):
-                # Print the input file.
-                print(f"Input: {input_path} ({formatted_size(input_path)})")
-                # If we're not doing a dry run, actually convert the file.
-                if not dry_run:
-                    output_path: str = generate_output_path(input_path)
-                    convert_to_h265(input_path, output_path)
-                # Keep track of the total data size.
-                actual_data_size += os.stat(input_path).st_size
-                # Stop processing files once we've reached our target data size.
-                if actual_data_size > target_data_size:
-                    break
-        except ffmpy.FFRuntimeError:
-            traceback.print_exc()
+        # Ignore any file that isn't a video.
+        if not is_video(input_path):
+            continue
+        # Ignore any video that is already encoded with CRF.
+        if encoded_with_crf(input_path):
+            continue
+        # Print the input file.
+        print(f"Input: {input_path} ({formatted_size(input_path)})")
+        # If we're not doing a dry run, actually convert the file.
+        if not dry_run:
+            output_path: str = generate_output_path(input_path)
+            convert_to_h265(input_path, output_path)
+        # Keep track of the total data size.
+        actual_data_size += os.stat(input_path).st_size
+        # Stop processing files once we've reached our target data size.
+        if actual_data_size > target_data_size:
+            break
