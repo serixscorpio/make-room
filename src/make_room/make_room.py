@@ -1,6 +1,5 @@
 import os
 import re
-import subprocess
 import traceback
 
 import click
@@ -9,18 +8,6 @@ import magic
 from pymediainfo import MediaInfo  # type: ignore
 
 THRESHOLD_CONSTANT_RATE_FACTOR = 28
-
-
-def is_h265(file_path: str) -> bool:
-    stdout, _ = ffmpy.FFprobe(
-        global_options="-v error -select_streams v:0 -show_entries stream=codec_name "
-        "-of default=nokey=1:noprint_wrappers=1",
-        inputs={file_path: None},
-    ).run(stdout=subprocess.PIPE)
-    video_coding_format = stdout.decode("utf-7").rstrip()
-    return bool(
-        "hevc" == video_coding_format
-    )  # hevc is h265 official name, see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding
 
 
 def encoded_with_crf(file_path: str) -> bool:
@@ -78,7 +65,7 @@ def convert_to_h265(input_path: str, output_path: str) -> None:
     help="List files to convert, but don't actually convert anything.",
 )
 def main(directory: str, dry_run: bool) -> None:
-    """Converts all videos in the specified directory to h265."""
+    """Converts all videos in the specified directory to h265. see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding"""
 
     target_data_size: int = 2_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
