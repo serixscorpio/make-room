@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import traceback
 
 import click
@@ -14,7 +15,11 @@ def encoded_with_crf(file_path: str) -> bool:
     media_info = MediaInfo.parse(file_path)
     if not isinstance(media_info, MediaInfo):
         raise TypeError("media_info must be an instance of MediaInfo")
-    encoding_setting = media_info.video_tracks[0].encoding_settings
+    tracks = media_info.video_tracks
+    if not tracks:
+        sys.stderr.write(f"No video tracks found in {file_path}\n")
+        return False
+    encoding_setting = tracks[0].encoding_settings
     if not encoding_setting:
         return False
     match = re.search(r"crf=(\d+)", encoding_setting)
