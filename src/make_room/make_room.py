@@ -8,10 +8,11 @@ import ffmpy  # type: ignore
 import magic
 from pymediainfo import MediaInfo  # type: ignore
 
-THRESHOLD_CONSTANT_RATE_FACTOR = 28
+THRESHOLD_CONSTANT_RATE_FACTOR = 23
 
 
 def encoded_with_crf(file_path: str) -> bool:
+    print(f"Checking {file_path} to see if it's encoded with CRF...")
     media_info = MediaInfo.parse(file_path)
     if not isinstance(media_info, MediaInfo):
         raise TypeError("media_info must be an instance of MediaInfo")
@@ -37,7 +38,7 @@ def is_video(file_path: str) -> bool:
 
 def generate_output_path(file_path: str, suffix: str = "-c") -> str:
     file_name, file_extension = os.path.splitext(file_path)
-    return file_name + suffix + file_extension
+    return file_name + suffix + ".mp4"  # convert to mp4 for compatibility with most devices
 
 
 def formatted_size(path: str) -> str:
@@ -48,7 +49,7 @@ def convert_to_h265(input_path: str, output_path: str) -> None:
     try:
         ff = ffmpy.FFmpeg(
             inputs={input_path: None},
-            outputs={output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR}"},
+            outputs={output_path: f"-vcodec libx265 -crf {THRESHOLD_CONSTANT_RATE_FACTOR} -c:a aac"},
         )
         ff.run(
             stdout=open(os.devnull),  # suppress output to console
@@ -72,7 +73,7 @@ def convert_to_h265(input_path: str, output_path: str) -> None:
 def main(directory: str, dry_run: bool) -> None:
     """Converts all videos in the specified directory to h265. see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding"""
 
-    target_data_size: int = 2_000_000_000  # process a maximum of N bytes of data
+    target_data_size: int = 4_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
 
     actual_data_size: int = 0
