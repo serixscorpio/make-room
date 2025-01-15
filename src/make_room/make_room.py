@@ -1,11 +1,9 @@
 import os
 import re
-import sys
 import traceback
 
 import click
 import ffmpy  # type: ignore
-import magic
 from pymediainfo import MediaInfo  # type: ignore
 
 THRESHOLD_CONSTANT_RATE_FACTOR = 23
@@ -13,13 +11,9 @@ THRESHOLD_CONSTANT_RATE_FACTOR = 23
 
 def encoded_with_crf(file_path: str) -> bool:
     print(f"Checking {file_path} to see if it's encoded with CRF...")
-    media_info = MediaInfo.parse(file_path)
-    if not isinstance(media_info, MediaInfo):
-        raise TypeError("media_info must be an instance of MediaInfo")
-    tracks = media_info.video_tracks
+    tracks = video_tracks(file_path)
     if not tracks:
-        sys.stderr.write(f"No video tracks found in {file_path}\n")
-        return False
+        raise ValueError(f"No video tracks found in {file_path}")
     encoding_setting = tracks[0].encoding_settings
     if not encoding_setting:
         return False
@@ -32,9 +26,11 @@ def encoded_with_crf(file_path: str) -> bool:
     return False
 
 
-def is_video(file_path: str) -> bool:
-    return "video" in magic.Magic(mime=True).from_file(file_path)
-
+def video_tracks(file_path: str) -> bool:
+    media_info = MediaInfo.parse(file_path)
+    if not isinstance(media_info, MediaInfo):
+        raise TypeError("media_info must be an instance of MediaInfo")
+    return media_info.video_tracks
 
 def generate_output_path(file_path: str, suffix: str = "-c") -> str:
     file_name, file_extension = os.path.splitext(file_path)
@@ -84,10 +80,11 @@ def main(directory: str, dry_run: bool) -> None:
         if not os.path.isfile(input_path):
             continue
         # Ignore any file that isn't a video.
-        if not is_video(input_path):
+        if not video_tracks(input_path):
             continue
         # Ignore any video that is already encoded with CRF.
         if encoded_with_crf(input_path):
+            print(f"Already encoded with CRF: {input_path}")
             continue
         # Print the input file.
         print(f"Input: {input_path} ({formatted_size(input_path)})")
