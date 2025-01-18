@@ -4,7 +4,10 @@ import traceback
 
 import click
 import ffmpy  # type: ignore
-from pymediainfo import MediaInfo  # type: ignore
+from pymediainfo import (  # type:ignore
+    MediaInfo,
+    Track,
+)
 
 THRESHOLD_CONSTANT_RATE_FACTOR = 23
 
@@ -26,7 +29,7 @@ def encoded_with_crf(file_path: str) -> bool:
     return False
 
 
-def video_tracks(file_path: str) -> bool:
+def video_tracks(file_path: str) -> list[Track]:
     media_info = MediaInfo.parse(file_path)
     if not isinstance(media_info, MediaInfo):
         raise TypeError("media_info must be an instance of MediaInfo")
