@@ -35,6 +35,7 @@ def video_tracks(file_path: str) -> list[Track]:
         raise TypeError("media_info must be an instance of MediaInfo")
     return media_info.video_tracks
 
+
 def generate_output_path(file_path: str, suffix: str = "-c") -> str:
     file_name, file_extension = os.path.splitext(file_path)
     return file_name + suffix + ".mp4"  # convert to mp4 for compatibility with most devices
