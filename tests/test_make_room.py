@@ -3,6 +3,7 @@ import shutil
 
 import pytest  # noqa: F401
 from click.testing import CliRunner
+
 from make_room import make_room
 
 fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
