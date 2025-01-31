@@ -63,39 +63,48 @@ def convert_to_h265(input_path: str, output_path: str) -> None:
     # print(f"Removed {input_path}")
 
 
+def make_room_at(path: str, dry_run: bool) -> None:
+    # Ignore anything that isn't a file.
+    if not os.path.isfile(path):
+        return
+    # Ignore any file that isn't a video.
+    if not video_tracks(path):
+        return
+    # Notice any video that is already encoded with CRF.
+    if encoded_with_crf(path):
+        print(f"Already encoded with CRF: {path}")
+        return
+    # Print the input file.
+    print(f"Input: {path} ({formatted_size(path)})")
+    # If we're not doing a dry run, actually convert the file.
+    if not dry_run:
+        output_path: str = generate_output_path(path)
+        convert_to_h265(path, output_path)
+
+
 @click.command(context_settings={"show_default": True})
-@click.argument("directory")
+@click.argument("path")
 @click.option(
     "--dry-run",
     is_flag=True,
     help="List files to convert, but don't actually convert anything.",
 )
-def main(directory: str, dry_run: bool) -> None:
+def main(path: str, dry_run: bool) -> None:
     """Converts all videos in the specified directory to h265. see https://en.wikipedia.org/wiki/High_Efficiency_Video_Coding"""
 
-    target_data_size: int = 4_000_000_000  # process a maximum of N bytes of data
     print(f"{'dry run...' if dry_run else 'real run...'}")
 
+    # If the path is a file, process the single file.
+    if os.path.isfile(path):
+        make_room_at(path, dry_run)
+        return
+
+    # Or, process path as a directory. Walk through entries in the directory, 1-level deep (i.e. non-recursively).
     actual_data_size: int = 0
-    # Walk through all the entries in the specified directory.
-    for entry in os.listdir(directory):
-        input_path: str = os.path.join(directory, entry)
-        # Ignore anything that isn't a file.
-        if not os.path.isfile(input_path):
-            continue
-        # Ignore any file that isn't a video.
-        if not video_tracks(input_path):
-            continue
-        # Ignore any video that is already encoded with CRF.
-        if encoded_with_crf(input_path):
-            print(f"Already encoded with CRF: {input_path}")
-            continue
-        # Print the input file.
-        print(f"Input: {input_path} ({formatted_size(input_path)})")
-        # If we're not doing a dry run, actually convert the file.
-        if not dry_run:
-            output_path: str = generate_output_path(input_path)
-            convert_to_h265(input_path, output_path)
+    target_data_size: int = 4_000_000_000  # process a maximum of N bytes of data
+    for entry in os.listdir(path):
+        input_path: str = os.path.join(path, entry)
+        make_room_at(input_path, dry_run)
         # Keep track of the total data size.
         actual_data_size += os.stat(input_path).st_size
         # Stop processing files once we've reached our target data size.
