@@ -37,7 +37,8 @@ def video_tracks(file_path: str) -> list[Track]:
 
 def encoded_with_crf(file_path: str) -> bool:
     """Check if the video file is encoded with a constant rate factor (CRF)."""
-    print(f"Checking {file_path} to see if it's encoded with CRF...")
+    # TODO: log this at debug level.
+    # print(f"Checking {file_path} to see if it's encoded with CRF...")
     tracks = video_tracks(file_path)
     if not tracks:
         raise ValueError(f"No video tracks found in {file_path}")
@@ -101,7 +102,8 @@ def make_room_at(path: str, dry_run: bool) -> bool:
     if video_tracks(path):
         # Notice any video that is already encoded with CRF.
         if encoded_with_crf(path):
-            print(f"Already encoded with CRF: {path}")
+            # TODO: log this at debug level.
+            # print(f"Already encoded with CRF: {path}")
             return False
         # Print the input file.
         print(f"Input: {path} ({formatted_size(path)})")
