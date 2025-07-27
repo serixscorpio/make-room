@@ -1,3 +1,8 @@
+"""make_room.py
+This module provides functionality to convert video files to H.265 format and JPEG images to AVIF
+format.  It includes functions to traverse directories, check file types, and perform conversions.
+"""
+
 import os
 import re
 import traceback
@@ -5,7 +10,6 @@ import traceback
 import click
 import ffmpy
 import magic
-import pillow_avif  # type: ignore # noqa: F401
 from PIL import Image, ImageFile
 from pymediainfo import MediaInfo, Track
 
@@ -13,23 +17,26 @@ THRESHOLD_CONSTANT_RATE_FACTOR = 23
 
 
 def is_jpeg(file_path: str) -> bool:
+    """Check if the file is a JPEG image."""
     try:
         return "image/jpeg" in magic.Magic(mime=True).from_file(file_path)
-    except Exception:
+    except OSError:
         return False
 
 
 def video_tracks(file_path: str) -> list[Track]:
+    """Get video tracks from a media file."""
     try:
         media_info = MediaInfo.parse(file_path)
         if not isinstance(media_info, MediaInfo):
             raise TypeError("media_info must be an instance of MediaInfo")
         return media_info.video_tracks
-    except Exception:
+    except OSError:
         return []
 
 
 def encoded_with_crf(file_path: str) -> bool:
+    """Check if the video file is encoded with a constant rate factor (CRF)."""
     print(f"Checking {file_path} to see if it's encoded with CRF...")
     tracks = video_tracks(file_path)
     if not tracks:
@@ -47,15 +54,18 @@ def encoded_with_crf(file_path: str) -> bool:
 
 
 def generate_output_path(file_path: str, suffix: str = "-c", extension: str = ".mp4") -> str:
+    """Generate an output file path with a given suffix and extension."""
     file_name, _ = os.path.splitext(file_path)
     return file_name + suffix + extension
 
 
 def formatted_size(path: str) -> str:
+    """Return the size of the file at the given path formatted as MB."""
     return f"{os.stat(path).st_size / 1024 / 1024:.1f}MB"
 
 
 def convert_to_h265(input_path: str, output_path: str) -> None:
+    """Convert a video file to H.265 format using FFmpeg."""
     try:
         ff = ffmpy.FFmpeg(
             inputs={input_path: None},
@@ -76,11 +86,13 @@ def convert_to_h265(input_path: str, output_path: str) -> None:
 
 
 def jpeg_to_avif(input_path: str, output_path: str) -> None:
-    JPGimg = Image.open(input_path)
-    JPGimg.save(output_path, "AVIF", quality=70)
+    """Convert a JPEG image to AVIF format."""
+    jpg_img = Image.open(input_path)
+    jpg_img.save(output_path, "AVIF", quality=70)
 
 
 def make_room_at(path: str, dry_run: bool) -> bool:
+    """Convert a file to H.265 or AVIF format, depending on its type."""
     # Ignore anything that isn't a file.
     if not os.path.isfile(path):
         return False
@@ -154,9 +166,7 @@ def main(path: str, dry_run: bool, recursive: bool, target_data_size: int) -> No
 
     for input_path in files_to_process:
         if actual_data_size >= target_data_size:
-            print(
-                f"Processed {actual_data_size} bytes, which is over the target of {target_data_size} bytes. Stopping."
-            )
+            print(f"Processed {actual_data_size} bytes, over {target_data_size} bytes. Stopping.")
             break
         try:
             if make_room_at(input_path, dry_run):
