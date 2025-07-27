@@ -1,47 +1,76 @@
-# Development
+# make-room
 
-Clone this repository.
+`make-room` is a command-line tool that helps you save space by converting your pictures and videos to more space-efficient formats. It can convert:
 
-Create a virtual environment, for example, directory `venv` using Python's `venv` module.
-```
-python -m venv venv
-```
+*   **Videos** to h265
+*   **JPEG images** to AVIF
 
-Activate the new environment with:
-```
-source ./venv/bin/activate
-```
+## Installation
 
-Make sure the latest pip version is in your virtual environment:
-```
-pip install --upgrade pip
-```
+1.  **Clone this repository:**
 
-Install all dependencies:
-```
-apt install mediainfo ffmpeg
-pip install -e ".[test,dev]"
-```
+    ```bash
+    git clone https://github.com/your-username/make-room.git
+    cd make-room
+    ```
 
-Test run cli tool:
-```
-make-room --help
-```
+2.  **Create and activate a virtual environment:**
 
-## `make_room` Usage
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
+    ```
 
-```sh
-# at project root
-make-room ~/ec-keep/photos-videos/2024/
-```
+3.  **Install the required dependencies:**
 
-This finds video within the `~/ec-keep/photos-videos/2024/` directory and encodes them using H265 with a constant rate factor of 28.
+    ```bash
+    pip install -e ".[test,dev]"
+    ```
 
-## `to_avif` Usage
+## Usage
 
-```sh
-# at project root
-python src/make_room/to_avif.py ~/ec-keep/photos-videos/2024/
+To use `make-room`, simply run the `make-room` command with the path to the directory or file you want to convert:
+
+```bash
+make-room /path/to/your/media
 ```
 
-This finds jpeg pictures within the `~/ec-keep/photos-video/2024/` direcotry and encodes them to [avif](https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types#avif_image) format, which has better compression (i.e. saves space).
+By default, `make-room` will recursively search for videos and JPEG images in the specified directory and convert them. You can customize the behavior of the tool with the following options:
+
+*   `--dry-run`: List the files that would be converted without actually performing the conversion.
+*   `--no-recursive`: Only process files in the specified directory, not in subdirectories.
+*   `--target-data-size`: Set a limit on the total amount of data to process, in bytes. The default is 3GB.
+
+### Examples
+
+*   **Convert all media in a directory and its subdirectories:**
+
+    ```bash
+    make-room /path/to/your/media
+    ```
+
+*   **Do a dry run to see what would be converted:**
+
+    ```bash
+    make-room --dry-run /path/to/your/media
+    ```
+
+*   **Convert only the files in the current directory:**
+
+    ```bash
+    make-room --no-recursive .
+    ```
+
+*   **Convert up to 1GB of media:**
+
+    ```bash
+    make-room --target-data-size 1000000000 /path/to/your/media
+    ```
+
+## Contributing
+
+Contributions are welcome! If you have any ideas for how to improve `make-room`, please open an issue or submit a pull request.
+
+## License
+
+`make-room` is licensed under the MIT License.
